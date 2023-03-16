@@ -17,6 +17,24 @@ Before running this project, you will need to have the following software instal
 2. MongoDB v4.4 or higher
 
 
+In the database do note that i created  a user called 'root' ,password: 'rootuser' or just copy and paste the following code in the mongo shell to create the user
+
+```bash
+use baseplay;
+db.createUser({	user: "root",pwd: "rootuser",roles:[{role: "userAdminAnyDatabase" , db:"admin"}]})
+
+```
+
+this is the connection string I used in the backend check the env file . 
+
+
+In most cases it's never a best cases or practise to include env in a repo but its for the demo purpose only . 
+
+
+
+
+
+
 ## Installation
  - Clone the repository from GitHub
  - Install dependencies: `npm install` in ech respective folders  ' frontend/appBaseplay    ' and ' backend/express-api '
@@ -32,7 +50,6 @@ The backend microservices provide an HTTP interface to perform CRUD operations o
 To run the front end cd to folder ' frontend/appBaseplay ' and run the command ` npm run dev ` ; the application will be available at http://localhost:3000
 
 To run the backend cd to folder ' backend/express-api ' and run the command ` npm run dev ` ; the application will be available at http://localhost:4130    , Do not change the port number for the back end as the front end uses it 
-
 
 
 
@@ -89,3 +106,11 @@ See screenshots below for the application in action:
 <img src="screenshots/Screenshot%202023-03-16%20224050.png">
 <img src="screenshots/Screenshot%202023-03-16%20224103.png">
 
+
+[LICENSE](LICENSE)
+
+
+## License
+
+
+MIT: <https://rem.mit-license.org>
