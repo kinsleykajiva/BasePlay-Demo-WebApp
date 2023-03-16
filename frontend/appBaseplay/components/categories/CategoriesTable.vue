@@ -3,12 +3,6 @@
     <div class="mb-3">
 
 
-
-
-
-
-
-
     </div>
     <table   class="table">
       <thead>
@@ -62,17 +56,19 @@ export default {
       EventBus.$emit('edit-category',id);
     },
     deleteCategory(id) {
-      axios.post('http://localhost:4130/api/v1/category/delete' , {id})
-        .then(response => {
-          console.log(response)
-          alert(response.data.message);
+      if (window.confirm("Are you sure about Deleting?")) {
+        axios.post('http://localhost:4130/api/v1/category/delete', {id})
+          .then(response => {
+            console.log(response)
+            alert(response.data.message);
 
-          this.refreshCategories();
+            this.refreshCategories();
 
-        })
-        .catch(error => {
-          console.log(error)
-        })
+          })
+          .catch(error => {
+            console.log(error)
+          });
+      }
     },
 
   }

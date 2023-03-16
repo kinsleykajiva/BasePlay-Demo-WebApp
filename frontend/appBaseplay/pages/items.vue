@@ -19,33 +19,40 @@
 
 
         <div class="row">
-          <div class="col-md-6 mb-3">
-            <label class="form-label" for="validationCustom03">src</label>
-            <input type="text" class="form-control" v-model="form.content.src" id="src" placeholder="" required="">
+          <div class="col-md-3 mb-3">
+            <label class="form-label" for="validationCustom03"> media src</label>
+            <input type="text" class="form-control" v-model="form.media.src" id="src" placeholder="" required="">
 
           </div>
           <div class="col-md-3 mb-3">
-            <label class="form-label" for="validationCustom04">extension</label>
+            <label class="form-label" for="validationCustom03"> Media type</label>
+            <input type="text" class="form-control" v-model="form.media.type_" id="type_" placeholder="" required="">
+
+          </div>
+
+
+          <div class="col-md-3 mb-3">
+            <label class="form-label" for="validationCustom04"> content extension</label>
             <input type="text" class="form-control" v-model="form.content.extension" placeholder="" required="">
 
           </div>
           <div class="col-md-3 mb-3">
-            <label class="form-label" for="validationCustom05">text</label>
+            <label class="form-label" for="validationCustom05"> content text</label>
             <input type="text" class="form-control" v-model="form.content.text" placeholder="" required="">
 
           </div>
           <div class="col-md-3 mb-3">
-            <label class="form-label" for="validationCustom05">quality</label>
+            <label class="form-label" for="validationCustom05"> content quality</label>
             <input type="text" class="form-control" v-model="form.content.quality" placeholder="" required="">
 
           </div>
           <div class="col-md-3 mb-3">
-            <label class="form-label" for="validationCustom05">size</label>
+            <label class="form-label" for="validationCustom05">content size</label>
             <input type="number" class="form-control" v-model="form.content.size" placeholder="" required="">
 
           </div>
           <div class="col-md-3 mb-3">
-            <label class="form-label" for="validationCustom05">size unit</label>
+            <label class="form-label" for="validationCustom05"> content size unit</label>
             <input type="text" class="form-control" v-model="form.content.size_unit" placeholder="" required="">
 
           </div>
@@ -70,7 +77,7 @@
         </div>
         <div>
           <label for="creator">Category *:</label>
-          <input class="form-control" type="text" id="category" v-model="form.category">
+          <input class="form-control" type="text" id="category" v-model="form.categories">
         </div>
 
 
@@ -158,7 +165,7 @@
     <div v-if="showTable" class="container">
 
       <button @click="createItems" class="btn btn-primary"> Create Item</button>
-      <h1>Items Table</h1>
+
       <Table :items="items"/>
     </div>
 
@@ -171,6 +178,7 @@
 import axios from 'axios'
 import AppHeader from "../components/AppHeader.vue";
 import Table from "@/components/items/Table.vue";
+import {EventBus} from "@/events/event-bus.js";
 
 
 export default {
@@ -181,10 +189,10 @@ export default {
       isEditMode: false,
       items: [],
       categories: [],
-
       selectedCategories: [],
       form: {
-        content:  {
+        categories: [],
+        content: {
           src: "",
           extension: "",
           text: "",
@@ -204,19 +212,45 @@ export default {
           seo_description: '',
           use_seo_values: false
         },
-        media: [{
+        media: {
           src: '',
-          extension: '',
-          text: '',
-          quality: '',
-          size: 0,
-          size_unit: ''
-        }],
-        categories: ['']
+          type_: '',
+
+        },
+
       }
     }
   },
   mounted() {
+
+    EventBus.$on('refresh-item', () => {
+      this.getAllItems();
+    })
+
+    EventBus.$on('edit-item', (id) => {
+      console.log('edit value', id); // Output: hello world
+
+
+      this.isEditMode = true;
+      this.showTable = false;
+
+      let newFormObject = this.items.find(item => item._id === id);
+      console.log('newFormObject', newFormObject)
+      newFormObject.locale = newFormObject.locale[0];
+      newFormObject.media = newFormObject.media[0];
+
+      this.form = newFormObject;
+
+      if (this.form.locale.use_seo_values == true) {
+        this.form.locale.use_seo_values = 'option1';
+
+      } else {
+        this.form.locale.use_seo_values = 'option2';
+
+      }
+
+
+    });
 
     this.getAllItems();
 
@@ -238,19 +272,17 @@ export default {
     submitForm() {
 
       if (this.form.locale.use_seo_values == true) {
-        this.form.locale.use_seo_values = 'option1';
-        // this.newCategory.locale.use_seo_values = true;
+      ///  this.form.locale.use_seo_values = 'option1';
+        this.form.locale.use_seo_values = true;
       } else {
-        this.form.locale.use_seo_values = 'option2';
-        // this.newCategory.locale.use_seo_values = false;
+       // this.form.locale.use_seo_values = 'option2';
+         this.form.locale.use_seo_values = false;
       }
-      if (this.isEditMode) {
-        dataToPost.id = this.newCategory._id;
-      }
-      const dataToPost = {
+console.log('this.form',this.form)
+      const dataToPost =  {
         content: this.form.content,
         item_type: this.form.item_type,
-        category: this.form.category,
+
         slug: this.form.slug,
         creator: this.form.creator,
         locale: {
@@ -261,56 +293,57 @@ export default {
           seo_description: this.form.locale.seo_description,
           use_seo_values: this.form.locale.use_seo_values
         },
-        media: [{
+        media:[{
           src: this.form.media.src,
-          extension: this.form.media.extension,
-          text: this.form.media.text,
-          quality: this.form.media.quality,
-          size: this.form.media.size,
-          size_unit: this.form.media.size_unit
+          type_: this.form.media.type_,
         }],
-        categories: [this.form.categories]
+        categories: this.form.categories
+      };
+
+      if (this.isEditMode) {
+        dataToPost.id = this.form._id;
       }
-      axios.post('http://localhost:4130/api/v1/items/save', dataToPost).then((res) => {
+      axios.post(this.isEditMode ? 'http://localhost:4130/api/v1/items/update' : 'http://localhost:4130/api/v1/items/save', dataToPost).then((res) => {
         console.log('response result', res);
         if (!res.data.success) {
           alert('Failed to create item')
-          return
+          return;
         }
         this.showTable = true;
+        this.isEditMode = false;
         alert(res.data.message);
-        this.getAllItems();
-        this .form= {
-          content:  {
+
+        this.form =  {
+          categories: [],
+          content: {
             src: "",
-              extension: "",
-              text: "",
-              quality: "",
-              size: 0,
-              size_unit: ""
+            extension: "",
+            text: "",
+            quality: "",
+            size: 0,
+            size_unit: ""
           },
           item_type: '',
-            category: '',
-            slug: '',
-            creator: '',
-            locale: {
+          category: '',
+          slug: '',
+          creator: '',
+          locale: {
             title: '',
-              description: '',
-              seo_title: '',
-              summary: '',
-              seo_description: '',
-              use_seo_values: false
+            description: '',
+            seo_title: '',
+            summary: '',
+            seo_description: '',
+            use_seo_values: false
           },
-          media: [{
+          media: {
             src: '',
-            extension: '',
-            text: '',
-            quality: '',
-            size: 0,
-            size_unit: ''
-          }],
-            categories: ['']
+            type_: '',
+
+          },
         }
+
+
+        this.getAllItems();
 
       }).catch((error) => {
         console.error(error)
