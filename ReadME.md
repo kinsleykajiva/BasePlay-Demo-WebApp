@@ -2,10 +2,14 @@
 
 
 
-Project  :CRUD Operation using Vue.js/Nuxt.js Front-end Framework and Backend Microservices with Mongoose ORM
+# **Project**  
+
+CRUD Operations using Vue.js/Nuxt.js Front-end Framework and Backend Sservices with Mongoose ORM
 
 
-This project demonstrates the implementation of CRUD (Create Read Update Delete) operations using the Vue.js/Nuxt.js-based front-end framework and Backend Microservices with an HTTP interface to perform CRUD operations on collections using Mongoose ORM.
+This project demonstrates the implementation of CRUD (Create Read Update Delete) operations using the Vue.js/Nuxt.js-based front-end framework and Backend Service with an HTTP interface to perform CRUD operations on collections using Mongoose ORM.
+
+
 
 
 
